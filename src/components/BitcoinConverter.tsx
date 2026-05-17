@@ -563,7 +563,7 @@ const BitcoinConverter = () => {
         <div className="max-w-5xl mx-auto flex items-center gap-4">
           <a href="https://upleb.uk" className="font-mono text-[11px] sm:text-[12px] text-muted-foreground/50 hover:text-primary transition-colors shrink-0">upleb</a>
           {(() => {
-            const SUBS = ['blst','fx','glmps','npub','pls','smpl','trth'] as const;
+            const SUBS = ['blst','glmps','npub','pls','smpl'] as const;
             const cur = SUBS.find((s) => window.location.hostname === `${s}.upleb.uk`);
             return <>
               {cur && <span className="font-mono text-[11px] sm:text-[12px] text-primary whitespace-nowrap shrink-0 cursor-default">{cur}</span>}
