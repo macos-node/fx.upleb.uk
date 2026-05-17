@@ -81,24 +81,54 @@ const NstartHand = () => (
 
 // ── NIP-07 Nostr login ────────────────────────────────────────────────────────
 declare global { interface Window { nostr?: { getPublicKey(): Promise<string>; signEvent(e: object): Promise<object> } } }
+// Module-level pubkey store with subscribers so every useNostrLogin() call
+// shares one source of truth. Without this, two components in the same page
+// each get an independent useState — login in one wouldn't re-render the other
+// until a page refresh re-read localStorage.
+let _nostrPubkey: string | null = null;
+let _nostrInitialized = false;
+const _nostrSubs = new Set<(p: string | null) => void>();
+function _readInitialPubkey(): string | null {
+  try {
+    const p = new URLSearchParams(window.location.search).get('nostr_pk');
+    if (p) { localStorage.setItem('nostr_pubkey', p); return p; }
+    return localStorage.getItem('nostr_pubkey');
+  } catch { return null; }
+}
+function _setNostrPubkey(p: string | null) {
+  _nostrPubkey = p;
+  _nostrSubs.forEach(fn => fn(p));
+}
+
 function useNostrLogin() {
-  const [pubkey, setPubkey] = useState<string | null>(() => {
-    try {
-      const p = new URLSearchParams(window.location.search).get('nostr_pk');
-      if (p) { localStorage.setItem('nostr_pubkey', p); return p; }
-      return localStorage.getItem('nostr_pubkey');
-    } catch { return null; }
+  const [pubkey, setLocal] = useState<string | null>(() => {
+    if (!_nostrInitialized) { _nostrPubkey = _readInitialPubkey(); _nostrInitialized = true; }
+    return _nostrPubkey;
   });
-  useEffect(() => { if (new URLSearchParams(window.location.search).get('nostr_pk')) window.history.replaceState({}, '', window.location.pathname); }, []);
+  useEffect(() => {
+    _nostrSubs.add(setLocal);
+    return () => { _nostrSubs.delete(setLocal); };
+  }, []);
+  useEffect(() => {
+    if (new URLSearchParams(window.location.search).get('nostr_pk')) {
+      window.history.replaceState({}, '', window.location.pathname);
+    }
+  }, []);
   const login = async () => {
     if (typeof window !== 'undefined' && window.nostr) {
-      try { const pk = await window.nostr.getPublicKey(); if (pk) { setPubkey(pk); localStorage.setItem('nostr_pubkey', pk); } } catch {}
+      try {
+        const pk = await window.nostr.getPublicKey();
+        if (pk) { localStorage.setItem('nostr_pubkey', pk); _setNostrPubkey(pk); }
+      } catch {}
       return;
     }
     const cb = `${window.location.origin}${window.location.pathname}?nostr_pk={signature}`;
     window.location.href = `nostrsigner:getpubkey?compressionType=none&returnType=signature&type=get_public_key&callbackUrl=${encodeURIComponent(cb)}`;
   };
-  const logout = () => { setPubkey(null); try { localStorage.removeItem('nostr_pubkey'); } catch {} };
+  const logout = () => {
+    try { localStorage.removeItem('nostr_pubkey'); } catch {} /* */
+    _setNostrPubkey(null);
+  };
   return { pubkey, login, logout };
 }
 // Light-weight kind:0 lookup so the nav login button can show the user's
