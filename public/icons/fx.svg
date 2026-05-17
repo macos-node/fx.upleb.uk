@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="fx — exchange rates">
+  <!-- Two opposing arrows (exchange) -->
+  <g fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="4">
+    <!-- Top arrow: left -> right -->
+    <path d="M 14 24 L 46 24" stroke="#FF7849"/>
+    <path d="M 40 18 L 46 24 L 40 30" stroke="#FF7849"/>
+    <!-- Bottom arrow: right -> left -->
+    <path d="M 50 40 L 18 40" stroke="#FFB347"/>
+    <path d="M 24 34 L 18 40 L 24 46" stroke="#FFB347"/>
+  </g>
+</svg>

@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="upleb">
+  <!-- 2x2 cubic grid. 4px outer margin, 6px inner gap, 25x25 cells. -->
+  <rect x="4"  y="4"  width="25" height="25" rx="4" fill="#FF7849"/>
+  <rect x="35" y="4"  width="25" height="25" rx="4" fill="#FFB347"/>
+  <rect x="4"  y="35" width="25" height="25" rx="4" fill="#FF7849"/>
+  <rect x="35" y="35" width="25" height="25" rx="4" fill="#FF7849"/>
+</svg>
