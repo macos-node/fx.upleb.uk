@@ -1,5 +1,5 @@
 #!/bin/bash
-# deploy.sh - Deploy glimpse.fizx.uk to your server
+# deploy.sh - Deploy fx.upleb.uk to your server
 # Usage: ./deploy.sh
 
 set -e
@@ -7,8 +7,8 @@ set -e
 # ============================================
 # CONFIGURATION - Edit these values
 # ============================================
-SERVER="root@88.218.206.187"         # <-- CHANGE THIS: your SSH user@hostname
-REMOTE_PATH="/var/www/glimpse.fizx.uk" # <-- CHANGE THIS if different on your server
+SERVER="root@45.154.199.154"         # <-- CHANGE THIS: your SSH user@hostname
+REMOTE_PATH="/var/www/fx.upleb.uk" # <-- CHANGE THIS if different on your server
 SSH_PORT="2121"                          # <-- CHANGE THIS if using non-standard SSH port
 
 # Local paths
@@ -23,7 +23,7 @@ GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
-echo -e "${GREEN}🚀 Starting deployment of glimpse.fizx.uk${NC}"
+echo -e "${GREEN}🚀 Starting deployment of fx.upleb.uk${NC}"
 echo "=========================================="
 
 # ============================================
@@ -110,10 +110,10 @@ echo -e "${GREEN}✅ Deployment complete!${NC}"
 echo "=========================================="
 echo ""
 echo "🌐 Your site should be live at:"
-echo "   https://glimpse.fizx.uk"
+echo "   https://fx.upleb.uk"
 echo ""
 echo "🧪 Quick checks:"
-echo "   curl -I https://glimpse.fizx.uk"
+echo "   curl -I https://fx.upleb.uk"
 echo ""
 echo "📋 If you see 403 errors, check permissions:"
 echo "   ssh $SERVER 'sudo chown -R www-data:www-data $REMOTE_PATH'"
