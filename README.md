@@ -32,7 +32,7 @@ npm run build
 rsync -avz --delete -e "ssh -p 2121" dist/ root@45.154.199.154:/var/www/fx.upleb.uk/
 ```
 
-VPS: `45.154.199.154`. Full server / nginx / SSL / DNS notes for the wider deployment live in the local `code_upleb/CLAUDE.md` (not pushed; this README is the public-facing summary).
+VPS: `45.154.199.154`. Full server / nginx / SSL / DNS notes for the wider deployment live in the local `code_gh/macos-node/CLAUDE.md` (not pushed; this README is the public-facing summary).
 
 ---
 
