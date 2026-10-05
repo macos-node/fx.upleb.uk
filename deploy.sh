@@ -7,9 +7,8 @@ set -e
 # ============================================
 # CONFIGURATION - Edit these values
 # ============================================
-SERVER="root@45.154.199.154"         # <-- CHANGE THIS: your SSH user@hostname
+SERVER="upleb.uk"   # a Host alias in ~/.ssh/config: the user, port and key live there
 REMOTE_PATH="/var/www/fx.upleb.uk" # <-- CHANGE THIS if different on your server
-SSH_PORT="2121"                          # <-- CHANGE THIS if using non-standard SSH port
 
 # Local paths
 LOCAL_DIST="./dist"
@@ -65,19 +64,17 @@ echo ""
 
 # Check if we can connect
 echo "Testing SSH connection..."
-if ! ssh -p "$SSH_PORT" -o ConnectTimeout=5 "$SERVER" "echo 'SSH OK'" > /dev/null 2>&1; then
+if ! ssh -o BatchMode=yes -o ConnectTimeout=5 "$SERVER" "echo 'SSH OK'" > /dev/null 2>&1; then
     echo -e "${RED}❌ Error: Cannot connect to server via SSH${NC}"
     echo "Please check:"
-    echo "  - SERVER variable is set correctly (current: $SERVER)"
-    echo "  - SSH key is configured: ssh-copy-id $SERVER"
-    echo "  - SSH port is correct (current: $SSH_PORT)"
+    echo "  - ~/.ssh/config has a Host entry named $SERVER (user, port, key)"
+    echo "  - that entry logs in: ssh $SERVER"
     exit 1
 fi
 
 # Use rsync to deploy
 echo "Syncing files..."
 rsync -avz --delete \
-    -e "ssh -p $SSH_PORT" \
     --exclude='.DS_Store' \
     --exclude='*.log' \
     --exclude='.git' \
@@ -89,21 +86,12 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-# ============================================
-# STEP 3: Fix Permissions
-# ============================================
-echo -e "${YELLOW}🔧 Setting permissions...${NC}"
-
-ssh -p "$SSH_PORT" "$SERVER" "sudo chown -R www-data:www-data $REMOTE_PATH && sudo chmod -R 755 $REMOTE_PATH"
-
-if [ $? -ne 0 ]; then
-    echo -e "${YELLOW}⚠️ Warning: Could not set permissions automatically${NC}"
-    echo "You may need to run manually on server:"
-    echo "  sudo chown -R www-data:www-data $REMOTE_PATH"
-fi
+# No ownership step: the webroot belongs to the deploy user, so the files land
+# with the right owner and nginx only needs to read them. Root login is off on
+# the server and sudo asks for a password, so nothing here uses either.
 
 # ============================================
-# STEP 4: Verify
+# STEP 3: Verify
 # ============================================
 echo ""
 echo -e "${GREEN}✅ Deployment complete!${NC}"
@@ -115,8 +103,5 @@ echo ""
 echo "🧪 Quick checks:"
 echo "   curl -I https://fx.upleb.uk"
 echo ""
-echo "📋 If you see 403 errors, check permissions:"
-echo "   ssh $SERVER 'sudo chown -R www-data:www-data $REMOTE_PATH'"
-echo ""
-echo "🔄 To reload Nginx (if needed):"
-echo "   ssh $SERVER 'sudo systemctl reload nginx'"
+echo "📋 If rsync says Permission denied, the webroot is not the deploy user's."
+echo "   Fix it once, on the server: sudo chown -R \$USER: $REMOTE_PATH"
