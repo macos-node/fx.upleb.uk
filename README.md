@@ -28,11 +28,14 @@ npm run dev
 ## Build + deploy
 
 ```bash
-npm run build
-rsync -avz --delete -e "ssh -p 2121" dist/ root@45.154.199.154:/var/www/fx.upleb.uk/
+./deploy.sh
 ```
 
-VPS: `45.154.199.154`. Full server / nginx / SSL / DNS notes for the wider deployment live in the local `code_gh/macos-node/CLAUDE.md` (not pushed; this README is the public-facing summary).
+Builds, then rsyncs `dist/` to the webroot. The script names the server by an
+SSH host alias (`upleb.uk` in `~/.ssh/config`), which carries the user, port and
+key.
+
+Server addresses and the nginx / SSL / DNS notes for the wider deployment live in the local `code_gh/macos-node/CLAUDE.md` (not pushed; this README is the public-facing summary).
 
 ---
 
